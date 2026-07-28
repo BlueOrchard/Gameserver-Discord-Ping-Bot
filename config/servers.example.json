@@ -1,0 +1,31 @@
+{
+  "discord": {
+    "channelId": "123456789012345678",
+    "dashboardTitle": "Private Game Servers",
+    "accentColor": "#57F287"
+  },
+  "refreshIntervalSeconds": 60,
+  "queryTimeoutMs": 5000,
+  "servers": [
+    {
+      "id": "minecraft-main",
+      "type": "minecraft-java",
+      "name": "Minecraft",
+      "host": "minecraft.example.com",
+      "port": 25565,
+      "displayAddress": "minecraft.example.com:25565"
+    },
+    {
+      "id": "palworld-main",
+      "type": "palworld",
+      "name": "Palworld",
+      "host": "palworld.example.com",
+      "port": 8211,
+      "statusProtocol": "rest",
+      "queryPort": 27015,
+      "restPort": 8212,
+      "restPasswordEnv": "PALWORLD_ADMIN_PASSWORD",
+      "displayAddress": "palworld.example.com:8211"
+    }
+  ]
+}

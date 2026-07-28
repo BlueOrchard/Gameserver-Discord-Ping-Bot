@@ -1,0 +1,12 @@
+services:
+  game-discord-checker:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./config/servers.json:/app/config/servers.json:ro
+      - dashboard-state:/app/.data
+
+volumes:
+  dashboard-state:
