@@ -5,10 +5,12 @@ import type {
 } from "../types.js";
 import { MinecraftChecker } from "./minecraft.js";
 import { PalworldChecker } from "./palworld.js";
+import { ProjectZomboidChecker } from "./project-zomboid.js";
 
 const checkers: Record<GameServerConfig["type"], ServerChecker> = {
   "minecraft-java": new MinecraftChecker() as ServerChecker,
   palworld: new PalworldChecker() as ServerChecker,
+  "project-zomboid": new ProjectZomboidChecker() as ServerChecker,
 };
 
 function safeErrorMessage(error: unknown): string {

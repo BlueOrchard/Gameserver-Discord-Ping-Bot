@@ -1,4 +1,4 @@
-export type ServerType = "minecraft-java" | "palworld";
+export type ServerType = "minecraft-java" | "palworld" | "project-zomboid";
 
 export interface DiscordConfig {
   channelId: string;
@@ -27,7 +27,15 @@ export interface PalworldServerConfig extends BaseServerConfig {
   restPasswordEnv: string;
 }
 
-export type GameServerConfig = MinecraftServerConfig | PalworldServerConfig;
+export interface ProjectZomboidServerConfig extends BaseServerConfig {
+  type: "project-zomboid";
+  queryPort: number;
+}
+
+export type GameServerConfig =
+  | MinecraftServerConfig
+  | PalworldServerConfig
+  | ProjectZomboidServerConfig;
 
 export interface AppConfig {
   discord: DiscordConfig;

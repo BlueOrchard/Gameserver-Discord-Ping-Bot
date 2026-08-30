@@ -26,6 +26,15 @@
       "restPort": 8212,
       "restPasswordEnv": "PALWORLD_ADMIN_PASSWORD",
       "displayAddress": "palworld.example.com:8211"
+    },
+    {
+      "id": "zomboid-main",
+      "type": "project-zomboid",
+      "name": "Project Zomboid",
+      "host": "zomboid.example.com",
+      "port": 16261,
+      "queryPort": 16261,
+      "displayAddress": "zomboid.example.com:16261"
     }
   ]
 }

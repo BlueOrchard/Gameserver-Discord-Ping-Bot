@@ -3,9 +3,10 @@
 ## Purpose
 
 This repository contains a private Discord bot for displaying the live status
-of personal game servers. It currently supports Minecraft Java Edition and
-Palworld. It is intentionally simple to operate for a small private community,
-while keeping game checks modular so more server types can be added later.
+of personal game servers. It currently supports Minecraft Java Edition,
+Palworld, and Project Zomboid. It is intentionally simple to operate for a
+small private community, while keeping game checks modular so more server types
+can be added later.
 
 This document is the durable product and architecture record. Update it whenever
 the application's behavior, configuration, supported protocols, or operational
@@ -48,13 +49,13 @@ config/servers.json + .env
        configuration validation
              |
              v
-   checker registry (concurrent)
-      |                 |
-      v                 v
- Minecraft TCP     Palworld REST
- status protocol    API (default)
-      \                 /
-       v               v
+        checker registry (concurrent)
+          |          |          |
+          v          v          v
+   Minecraft TCP  Palworld   Zomboid A2S
+   status protocol REST/A2S   UDP query
+          \          |          /
+           v         v         v
         normalized ServerStatus[]
                    |
                    v
@@ -77,8 +78,11 @@ Important source modules:
 - `src/checkers/index.ts`: checker registry, failure isolation, and safe public
   error messages.
 - `src/checkers/minecraft.ts`: Minecraft Java status request and response parser.
+- `src/checkers/a2s.ts`: shared Valve/Steam A2S_INFO UDP request, challenge
+  handling, and response parser.
 - `src/checkers/palworld.ts`: REST info/metrics requests plus legacy Valve
   A2S_INFO querying and response parsing.
+- `src/checkers/project-zomboid.ts`: Project Zomboid A2S status normalization.
 
 ## Protocol behavior
 
@@ -108,6 +112,15 @@ The legacy `a2s` mode sends a Valve/Steam `A2S_INFO` request over UDP to
 builds bind the query port but do not answer these packets, which is why REST is
 the preferred protocol.
 
+### Project Zomboid
+
+The checker sends a Valve/Steam `A2S_INFO` request over UDP to
+`host:queryPort`. The default Project Zomboid game port, `16261`, handles Steam
+queries; the networking design also uses a separate port for direct client
+connections. The query response supplies current/max players, public server
+name, map, version, and latency when the server reports them. No RCON
+credentials are required.
+
 ## Configuration contract
 
 Runtime secrets belong in `.env`:
@@ -132,8 +145,9 @@ Non-secret behavior belongs in `config/servers.json`:
 Every server has a unique lowercase `id`, supported `type`, display `name`,
 network `host`, gameplay `port`, and `displayAddress`. Palworld additionally
 selects `statusProtocol`, `restPort`, `restPasswordEnv`, and the legacy
-`queryPort`. Configuration and environment variables are loaded once at
-startup; restart the process after editing either one.
+`queryPort`. Project Zomboid has a `queryPort` that defaults to its configured
+`port`. Configuration and environment variables are loaded once at startup;
+restart the process after editing either one.
 
 ## Privacy and security decisions
 
@@ -196,7 +210,7 @@ npm run typecheck
 npm run build
 ```
 
-The automated tests contain synthetic Minecraft and Palworld packets and verify
-that their normalized status data is parsed correctly. A complete live smoke
-test additionally requires valid Discord credentials and reachable game
-servers, which are intentionally not stored in this repository.
+The automated tests contain synthetic Minecraft, Palworld, and Project Zomboid
+packets and verify that their normalized status data is parsed correctly. A
+complete live smoke test additionally requires valid Discord credentials and
+reachable game servers, which are intentionally not stored in this repository.

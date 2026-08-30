@@ -6,7 +6,11 @@ import type {
   ServerType,
 } from "./types.js";
 
-const SUPPORTED_TYPES = new Set<ServerType>(["minecraft-java", "palworld"]);
+const SUPPORTED_TYPES = new Set<ServerType>([
+  "minecraft-java",
+  "palworld",
+  "project-zomboid",
+]);
 const SNOWFLAKE_PATTERN = /^\d{17,20}$/;
 const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 
@@ -81,6 +85,20 @@ function parseServer(value: unknown, index: number): GameServerConfig {
 
   if (type === "minecraft-java") {
     return { ...shared, type };
+  }
+
+  if (type === "project-zomboid") {
+    return {
+      ...shared,
+      type,
+      queryPort: integerAt(
+        raw.queryPort,
+        `${path}.queryPort`,
+        1,
+        65_535,
+        shared.port,
+      ),
+    };
   }
 
   return {

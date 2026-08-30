@@ -27,6 +27,7 @@ function truncate(value: string, max: number): string {
 }
 
 function serverEmoji(server: GameServerConfig): string {
+  if (server.type === "project-zomboid") return "🧟";
   return server.type === "minecraft-java" ? "⛏️" : "🌴";
 }
 

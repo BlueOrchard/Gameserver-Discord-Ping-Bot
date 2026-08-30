@@ -1,8 +1,8 @@
 # Private Game Server Discord Dashboard
 
-A private Discord bot that checks Minecraft Java and Palworld servers, edits a
-persistent rich-embed dashboard, and sets the bot's activity to a summary such
-as `Watching 2/2 game servers online`.
+A private Discord bot that checks Minecraft Java, Palworld, and Project Zomboid
+servers, edits a persistent rich-embed dashboard, and sets the bot's activity to
+a summary such as `Watching 3/3 game servers online`.
 
 The complete behavior and architecture are recorded in
 [APPLICATION.md](./APPLICATION.md).
@@ -13,6 +13,8 @@ The complete behavior and architecture are recorded in
 - Uses the Minecraft Java status protocol over TCP.
 - Uses Palworld's supported REST API by default, with legacy Steam/Valve
   `A2S_INFO` available as an optional fallback.
+- Uses Project Zomboid's Steam `A2S_INFO` query on its configured game/query
+  port.
 - Shows online state, players, latency, address, version, map, and server name
   when the game exposes them.
 - Edits the same Discord message after each check instead of posting repeatedly.
@@ -85,6 +87,15 @@ Then replace the example hostnames and ports:
       "restPort": 8212,
       "restPasswordEnv": "PALWORLD_ADMIN_PASSWORD",
       "displayAddress": "palworld.example.net:8211"
+    },
+    {
+      "id": "zomboid-main",
+      "type": "project-zomboid",
+      "name": "Project Zomboid",
+      "host": "192.168.1.70",
+      "port": 16261,
+      "queryPort": 16261,
+      "displayAddress": "zomboid.example.net:16261"
     }
   ]
 }
@@ -108,6 +119,14 @@ On the Palworld host, set `RESTAPIEnabled=True`, `RESTAPIPort=8212`, and a stron
 Keep this administrative port on the LAN; do not expose it to the Internet.
 
 Legacy `statusProtocol: "a2s"` uses the UDP `queryPort`, commonly `27015`.
+
+For Project Zomboid, `port` is the address displayed to players and
+`queryPort` is where the bot sends Steam status queries. Both are `16261/UDP`
+by default. Project Zomboid's published networking design uses an additional
+port—historically `16262/UDP` by default—for direct player connections, but the
+tracker does not query that second port. If your server changes `DefaultPort`,
+update both `port` and `queryPort` to match. See the
+[official networking explanation](https://projectzomboid.com/blog/news/2022/09/the-good-life/).
 
 ## 3. Install and run
 
@@ -150,6 +169,9 @@ recreation.
   Palworld, and confirm TCP `restPort` is reachable from the bot.
 - **Palworld REST rejects credentials:** make sure `.env` contains the same
   password as `AdminPassword` and restart the bot so it reloads `.env`.
+- **Project Zomboid times out:** verify the bot can reach `queryPort` over UDP
+  and that it matches the server's `DefaultPort` (normally `16261`). Do not use
+  the separate direct-connection port as the Steam query endpoint.
 - **A host works publicly but not inside Docker:** use an address resolvable and
   reachable from the container; on a LAN that may be the server's private IP.
 - **The bot creates a replacement dashboard:** its state file was missing, the

@@ -2,7 +2,7 @@
   "name": "game-discord-checker",
   "version": "1.0.0",
   "private": true,
-  "description": "Private Discord dashboard for Minecraft, Palworld, and future game servers.",
+  "description": "Private Discord dashboard for Minecraft, Palworld, Project Zomboid, and future game servers.",
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
